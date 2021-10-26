@@ -8,25 +8,27 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
+import reactor.util.function.Tuple2
 
 @RestController
 @RequestMapping("/api")
 class UniversityEndpoint(
     val webClient: WebClient = WebClient.create()
 ) {
-    @GetMapping("/all")
-    fun getAllStudentsAndTutors(): Flux<University> {
+    @GetMapping("/university")
+    fun getAllStudentsAndTutors(): Flux<Tuple2<Student, Tutor>> {
         val students: Flux<Student> = webClient.get()
-            .uri("http://localhost:8082/students")
+            .uri("http://localhost:8082/api/students")
             .retrieve()
             .bodyToFlux(Student::class.java)
-            .log()
+            .log("STUDENTS CALLED.")
 
         val tutors: Flux<Tutor> = webClient.get()
-            .uri("http://localhost:8081/tutors")
+            .uri("http://localhost:8081/api/tutors")
             .retrieve()
             .bodyToFlux(Tutor::class.java)
+            .log("TUTORS CALLED.")
 
-        return Flux.just(University(students, tutors))
+        return students.zipWith(tutors)
     }
 }
