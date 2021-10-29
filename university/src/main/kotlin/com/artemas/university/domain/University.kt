@@ -1,10 +1,8 @@
 package com.artemas.university.domain
 
-import reactor.core.publisher.Flux
-
 data class University(
-    val students: Flux<Student>,
-    val tutors: Flux<Tutor>
+    val students: List<Student>,
+    val tutors: List<Tutor>
 )
 
 data class Student(

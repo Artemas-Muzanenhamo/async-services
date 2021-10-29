@@ -2,7 +2,6 @@ package com.artemas.university.web
 
 import com.artemas.university.domain.Student
 import com.artemas.university.domain.Tutor
-import com.artemas.university.domain.University
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
