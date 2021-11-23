@@ -20,11 +20,13 @@ class UniversityEndpoint(
             .uri("http://localhost:8082/api/students")
             .retrieve()
             .bodyToFlux(Student::class.java)
+            .log("STUDENTS CALLED.")
             .zipWith(
                 webClient.get()
                     .uri("http://localhost:8081/api/tutors")
                     .retrieve()
                     .bodyToFlux(Tutor::class.java)
+                    .log("TUTORS CALLED.")
             )
     }
 }
