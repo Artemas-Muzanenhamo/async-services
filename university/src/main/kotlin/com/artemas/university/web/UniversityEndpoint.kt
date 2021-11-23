@@ -16,18 +16,15 @@ class UniversityEndpoint(
 ) {
     @GetMapping("/university")
     fun getAllStudentsAndTutors(): Flux<Tuple2<Student, Tutor>> {
-        val students: Flux<Student> = webClient.get()
+        return webClient.get()
             .uri("http://localhost:8082/api/students")
             .retrieve()
             .bodyToFlux(Student::class.java)
-            .log("STUDENTS CALLED.")
-
-        val tutors: Flux<Tutor> = webClient.get()
-            .uri("http://localhost:8081/api/tutors")
-            .retrieve()
-            .bodyToFlux(Tutor::class.java)
-            .log("TUTORS CALLED.")
-
-        return students.zipWith(tutors)
+            .zipWith(
+                webClient.get()
+                    .uri("http://localhost:8081/api/tutors")
+                    .retrieve()
+                    .bodyToFlux(Tutor::class.java)
+            )
     }
 }
