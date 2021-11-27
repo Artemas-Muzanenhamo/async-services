@@ -13,10 +13,10 @@ class StudentsEndpoint {
     @GetMapping("/students")
     fun getAllStudents(): Flux<Student> {
         return Flux.just(
-            Student(47834, "seth", "curry"),
-            Student(43578, "steph", "curry"),
-            Student(99854, "booker", "t"),
-            Student(48743, "dwight", "howard")
+            Student(47834, "seth", "curry", 54323),
+            Student(43578, "steph", "curry", 12313),
+            Student(99854, "booker", "t", 99434),
+            Student(48743, "dwight", "howard", 89453)
         )
     }
 }

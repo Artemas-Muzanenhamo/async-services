@@ -1,7 +1,7 @@
 package com.artemas.university.domain
 
 data class University(
-    val students: List<Student>,
+    val students: Student,
     val tutors: List<Tutor>
 )
 

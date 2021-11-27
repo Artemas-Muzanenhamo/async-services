@@ -2,11 +2,14 @@ package com.artemas.university.web
 
 import com.artemas.university.domain.Student
 import com.artemas.university.domain.Tutor
+import com.artemas.university.domain.University
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.create
+import org.springframework.web.reactive.function.client.bodyToFlow
+import org.springframework.web.reactive.function.client.bodyToFlux
 import reactor.core.publisher.Flux
 import reactor.util.function.Tuple2
 
@@ -14,20 +17,22 @@ import reactor.util.function.Tuple2
 @RequestMapping("/api")
 class UniversityEndpoint(val webClient: WebClient = create()) {
 
+
+    fun students(): Flux<Student> = webClient.get()
+        .uri(STUDENTS_API)
+        .retrieve()
+        .bodyToFlux()
+
+    fun tutors(): Flux<Tutor> = webClient.get()
+        .uri(TUTORS_API)
+        .retrieve()
+        .bodyToFlux()
+
+
     @GetMapping("/university")
-    fun getAllStudentsAndTutors(): Flux<Tuple2<Student, Tutor>> {
-        return webClient.get()
-            .uri(STUDENTS_API)
-            .retrieve()
-            .bodyToFlux(Student::class.java)
-            .log("STUDENTS CALLED.")
-            .zipWith(
-                webClient.get()
-                    .uri(TUTORS_API)
-                    .retrieve()
-                    .bodyToFlux(Tutor::class.java)
-                    .log("TUTORS CALLED.")
-            )
+    fun getAllStudentsAndTutors(): Flux<University> {
+        this.students()
+            .map { student -> this.tutors() }
     }
 
     companion object {
