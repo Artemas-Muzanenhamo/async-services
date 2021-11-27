@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.create
-import org.springframework.web.reactive.function.client.bodyToFlow
 import org.springframework.web.reactive.function.client.bodyToFlux
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Flux
-import reactor.util.function.Tuple2
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api")
@@ -21,18 +21,23 @@ class UniversityEndpoint(val webClient: WebClient = create()) {
     fun students(): Flux<Student> = webClient.get()
         .uri(STUDENTS_API)
         .retrieve()
-        .bodyToFlux()
+        .bodyToFlux<Student>()
+        .log("STUDENTS API WAS CALLED")
 
-    fun tutors(): Flux<Tutor> = webClient.get()
-        .uri(TUTORS_API)
+    fun tutor(tutorId: Long): Mono<Tutor> = webClient.get()
+        .uri("$TUTORS_API/$tutorId")
         .retrieve()
-        .bodyToFlux()
+        .bodyToMono<Tutor>()
+        .log("TUTOR API WAS CALLED")
 
 
     @GetMapping("/university")
     fun getAllStudentsAndTutors(): Flux<University> {
-        this.students()
-            .map { student -> this.tutors() }
+        return this.students()
+            .flatMap { student ->
+                this.tutor(student.tutorId)
+                    .map { tutor -> University(student, tutor) }
+            }
     }
 
     companion object {
